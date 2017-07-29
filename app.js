@@ -66,6 +66,19 @@ var budgetController = (function() {
             
         },
 
+        deleItem: function(type,id){
+            var ids, index;
+           ids = data.allItems[type].map(function(current){
+                return current.id;
+            })
+           index = ids.indexOf(id);
+
+           if (index !== -1){
+            data.allItems[type].splice(index,1);
+           }
+
+        },
+
         getBudget: function() {
             return{
                 budget: data.budget,
@@ -95,7 +108,8 @@ var UIController = (function() {
         incomeLable: '.budget__income--value',
         budgetLable: '.budget__value',
         expensesLabel: '.budget__expenses--value',
-        percentageLabel: '.budget__expenses--percentage'
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container'
     }
 
     return {
@@ -175,8 +189,11 @@ var appController = (function(budgetCtrl,UICtrl) {
         
             };
         });
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+        console.log('sonam');
     
     }
+
     
 
     var updateBudget = function() {
@@ -201,18 +218,33 @@ var appController = (function(budgetCtrl,UICtrl) {
             updateBudget();
         }
 
-
     };
+
+    var ctrlDeleteItem = function(event) {
+        var itemID, splitID, type, ID;
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        console.log(itemID);
+        if (itemID) {
+            splitID = itemID.split('-');
+            type = splitID[0];
+            ID = parseInt(splitID[1]);
+        }
+        budgetCtrl.deleItem(type,ID)
+    };
+
+
+
 
 
     return {
         init: function() {
             console.log("started");
-            setupEventListener();
+            
             UICtrl.displayBudget({budget: 0,
                 percentage: -1,
                 totalInc: 0,
                 totalExp: 0})
+            setupEventListener();
         }
 
     };  
